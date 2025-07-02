@@ -6,12 +6,18 @@ export class OtpService {
   constructor(private readonly prisma: PrismaService) {}
 
   async saveOtp(email: string, code: string, type: string) {
+    // Clean old OTPs for this user/type
+    await this.prisma.otp.deleteMany({
+      where: { email, type },
+    });
+  
+    // Save new OTP
     await this.prisma.otp.create({
       data: {
         email,
         code,
         type,
-        expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes validity
       },
     });
   }
