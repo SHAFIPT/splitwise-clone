@@ -21,6 +21,8 @@ export class SendOtpUseCase {
 
   async execute({ email, type }: { email: string; type: string }) {
     const user = await this.authRepo.findByEmail(email);
+    console.log('This is the user in backe db :', user)
+    console.log('This is the type get in backend :',type)
     if (type === 'register' && user)
       throw new ConflictException(AuthMessages.EMAIL_ALREADY_EXISTS);
     if (type === 'forgot-password' && !user)

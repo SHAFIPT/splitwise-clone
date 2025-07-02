@@ -47,6 +47,7 @@ export class AuthController {
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    console.log('the backend respose get in forntet for register:', dto);
     const result = await this.registerUseCase.execute(dto);
 
     res.cookie('refresh_token', result.refreshToken, {
