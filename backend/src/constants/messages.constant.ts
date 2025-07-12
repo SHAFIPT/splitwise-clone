@@ -15,3 +15,12 @@ export const AuthMessages = {
   REFRESH_TOKEN_MISSING: 'Refresh token missing',
   LOGOUT_SUCCESS: 'Logout successful',
 };
+
+export const UserMessages = {
+  USER_NOT_FOUND: 'User not found',
+  EMAIL_QUERY_REQUIED: 'Email query is required',
+};
+
+export const GroupMessages = {
+  GROUP_CREATED: 'Group created successfully',
+};

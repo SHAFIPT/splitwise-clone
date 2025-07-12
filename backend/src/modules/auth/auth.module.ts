@@ -16,9 +16,11 @@ import { ResetPasswordUseCase } from './use-cases/reset-password.use-case';
 import { MailService } from './services/mail.service';
 import { OtpService } from './services/otp.service';
 import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [PrismaModule, JwtModule.registerAsync(jwtConfig)],
+  imports: [PrismaModule, PassportModule, JwtModule.registerAsync(jwtConfig)],
   controllers: [AuthController],
   providers: [
     RegisterUseCase,
@@ -32,6 +34,7 @@ import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
     MailService,
     OtpService,
     TokenService,
+    JwtStrategy,
     {
       provide: IAuthRepositoryToken,
       useClass: PrismaAuthRepository,

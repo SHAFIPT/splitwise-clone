@@ -8,7 +8,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 const normalizeBaseURL = (url: string) => {
   if (!url) throw new Error("NEXT_PUBLIC_API_URL is missing");
   const trimmed = url.endsWith("/") ? url.slice(0, -1) : url;
-  new URL(trimmed);
+  new URL(trimmed); // validate format
   return trimmed;
 };
 
@@ -17,6 +17,7 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
+// ✅ Request interceptor – Add Authorization header if token exists
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
@@ -26,23 +27,41 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
-type RefreshResponse = {
-  accessToken: string;
-};
-
+// ✅ Response interceptor – Handle token refresh for protected routes only
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    // Skip refresh logic for these public routes
+    const publicPaths = [
+      "/auth/forgot-password",
+      "/auth/reset-password",
+      "/auth/send-otp",
+      "/auth/verify-otp",
+      "/auth/register",
+      "/auth/login",
+    ];
+
+    const isPublicRoute = publicPaths.some((path) =>
+      originalRequest.url?.includes(path)
+    );
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isPublicRoute
+    ) {
       originalRequest._retry = true;
+
       try {
-        const res = await axios.get<RefreshResponse>(
-          `${normalizeBaseURL(API_URL)}/api/auth/refresh-token`,
-          { withCredentials: true },
+        const res = await axios.post<{ accessToken: string }>(
+          `${normalizeBaseURL(API_URL)}/auth/refresh-token`,
+          {},
+          { withCredentials: true }
         );
 
         const newToken = res.data.accessToken;
@@ -51,14 +70,16 @@ axiosInstance.interceptors.response.use(
         setAccessToken(newToken);
         originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return axiosInstance(originalRequest);
+
+        return axiosInstance(originalRequest); // retry original request with new token
       } catch (refreshError) {
         store.dispatch(logout());
         return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
-  },
+  }
 );
 
 export default axiosInstance;

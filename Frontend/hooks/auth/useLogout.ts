@@ -3,7 +3,8 @@ import { logoutApi } from "@/lib/api/auth-api";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/slices/userSlice";
-import { setAccessToken } from "@/lib/utils/tokenUtils";
+import { removeAccessToken } from "@/lib/utils/tokenUtils";
+import { toast } from "react-hot-toast";
 
 export const useLogout = () => {
   const router = useRouter();
@@ -13,11 +14,13 @@ export const useLogout = () => {
     mutationFn: logoutApi,
     onSuccess: () => {
       dispatch(logout());
-      setAccessToken("");
+      removeAccessToken();
+      toast.success("Logged out successfully ✅");
       router.push("/login");
     },
     onError: (err) => {
       console.error("Logout failed:", err);
+      toast.error("Logout failed. Please try again.");
     },
   });
 };

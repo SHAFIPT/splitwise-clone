@@ -86,6 +86,7 @@ const Register = () => {
           };
   
           sessionStorage.setItem("registerData", JSON.stringify(payload));
+          sessionStorage.setItem("otpFlow", "register");
           router.push("/verify-otp");
         },
         onError: (err: CustomAxiosError) => {
@@ -239,7 +240,7 @@ const Register = () => {
                         <button
                           type="button"
                           onClick={() => setShowPassword((prev) => !prev)}
-                          className="absolute inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition-colors duration-300"
+                          className="absolute cursor-pointer inset-y-0 right-2 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition-colors duration-300"
                         >
                           {showPassword ? (
                             <EyeOff size={20} />
@@ -264,7 +265,7 @@ const Register = () => {
                           name="confirmPassword"
                           type={showConfirmPassword ? "text" : "password"}
                           placeholder="Confirm your password"
-                          className="h-12 text-base border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-300 pr-10 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                          className="h-12 text-bas cursor-pointer border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-300 pr-10 placeholder:text-gray-500 dark:placeholder:text-gray-400"
                           value={formData.confirmPassword}
                           onChange={handleInputChange}
                           required

@@ -46,18 +46,18 @@ const Index = () => {
               </Button>
               <Button
                 variant="outline"
-                className="border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-white transition-colors duration-300"
+                className="border-gray-300 cursor-pointer dark:border-gray-600 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-white transition-colors duration-300"
               >
                 <Link href="/login">Log In</Link>
               </Button>
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+              <Button className="bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                 <Link href="/register">Sign Up Free</Link>
               </Button>
               {/* Theme toggle button */}
               <Button
                 variant="ghost"
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
+                className="p-2 rounded-full cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
               >
                 {isDark ? (
                   <Sun className="w-5 h-5 text-yellow-400" />

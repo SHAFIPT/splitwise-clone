@@ -22,6 +22,8 @@ import {
   Shield,
   Moon,
   Sun,
+  EyeOff,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -30,6 +32,7 @@ import toast from "react-hot-toast";
 const Login = () => {
   const login = useLogin();
   const { isDark, toggleTheme } = useTheme();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,7 +46,10 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent
+
+    
+  ) => {
     e.preventDefault();
 
     const { error } = loginSchema.validate(formData, { abortEarly: false });
@@ -131,23 +137,35 @@ const Login = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label
-                      htmlFor="password"
-                      className="text-sm font-medium text-gray-900 dark:text-gray-200 transition-colors duration-300"
-                    >
-                      Password
-                    </Label>
-                    <Input
-                      id="password"
-                      name="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      className="h-12 text-base border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-300 placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
+                      <Label
+                        htmlFor="password"
+                        className="text-sm font-medium text-gray-900 dark:text-gray-200 transition-colors duration-300"
+                      >
+                        Password
+                      </Label>
+                      
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          name="password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="Enter your password"
+                          className="h-12 text-base pr-10 border-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:border-blue-500 dark:focus:border-blue-400 transition-colors duration-300 placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                        
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute cursor-pointer inset-y-0 right-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition-colors duration-300"
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
+                    </div>
+
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -163,17 +181,17 @@ const Login = () => {
                         Remember me
                       </Label>
                     </div>
-                    <a
-                      href="#"
+                    <Link
+                      href="/forgot-password"
                       className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-300"
                     >
                       Forgot password?
-                    </a>
+                    </Link>
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base font-medium shadow-lg transition-all duration-200"
+                    className="w-full h-12 cursor-pointer bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-base font-medium shadow-lg transition-all duration-200"
                   >
                     Sign In
                     <ArrowRight className="w-4 h-4 ml-2" />

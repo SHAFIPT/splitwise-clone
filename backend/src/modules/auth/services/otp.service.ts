@@ -10,7 +10,7 @@ export class OtpService {
     await this.prisma.otp.deleteMany({
       where: { email, type },
     });
-  
+
     // Save new OTP
     await this.prisma.otp.create({
       data: {
@@ -31,6 +31,9 @@ export class OtpService {
         verified: false,
         expiresAt: { gt: new Date() },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
     if (!otp) return false;
@@ -40,5 +43,23 @@ export class OtpService {
       data: { verified: true },
     });
     return true;
+  }
+
+  async isOtpAlreadyVerified(
+    email: string,
+    code: string,
+    type: string,
+  ): Promise<boolean> {
+    const otp = await this.prisma.otp.findFirst({
+      where: {
+        email,
+        code,
+        type,
+        verified: true,
+        expiresAt: { gt: new Date() },
+      },
+    });
+
+    return !!otp;
   }
 }

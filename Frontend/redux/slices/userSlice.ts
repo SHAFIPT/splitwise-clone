@@ -5,6 +5,7 @@ interface UserState {
   name: string | null;
   email: string | null;
   phone: string | null;
+  location: string | null;
   avatarUrl?: string | null;
   role: string;
   isAuthenticated: boolean;
@@ -15,6 +16,7 @@ const initialState: UserState = {
   name: null,
   email: null,
   phone: null,
+  location: null,
   avatarUrl: null,
   role: "user",
   isAuthenticated: false,

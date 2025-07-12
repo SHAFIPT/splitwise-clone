@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Outfit, Ovo } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./providers/ThemeProvider";
 import { ThemeScript } from "./theme-script";
 import ReduxProvider from "./providers/ReduxProvider";
 import { Toaster } from "react-hot-toast";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
+import { Poppins  } from "next/font/google";
+import { Inter  } from "next/font/google";
 
-const outfitFont = Outfit({
+const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const ovoFont = Ovo({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -35,7 +36,7 @@ export default function RootLayout({
         <ThemeScript />
       </head>
       <body
-        className={`${outfitFont.className} ${ovoFont.className} antialiased`}
+        className={`${poppins.className} ${inter.className} antialiased`}
         cz-shortcut-listen="true"
       >
         <ReduxProvider>

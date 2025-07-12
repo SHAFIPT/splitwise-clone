@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import Spinner from "@/components/ui/spinner";
 import { useRegister } from "@/hooks/auth/useRegister";
+import { useSendOtp } from "@/hooks/auth/useSendOtp";
 import { useVerifyOtp } from "@/hooks/auth/useVerifyOtp";
 import withGuest from "@/lib/auth/withGuest";
 import { setAccessToken } from "@/lib/utils/tokenUtils";
@@ -29,6 +30,7 @@ const OTPVerification = ({ isDark = false, onBack }: OTPVerificationProps) => {
   const register = useRegister();
   const dispatch = useDispatch();
   const router = useRouter();
+  const sendOtp = useSendOtp();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [timeLeft] = useState<number>(120);
   const isVerifying = verifyOtp.isPending || register.isPending;
@@ -57,42 +59,65 @@ const OTPVerification = ({ isDark = false, onBack }: OTPVerificationProps) => {
   };
 
   const handleVerify = () => {
+    const otpFlow = sessionStorage.getItem("otpFlow");
+    const email = sessionStorage.getItem("otpEmail");
     const stored = sessionStorage.getItem("registerData");
-    if (!stored) return alert("No registration data found");
-
-    const { name, email, password } = JSON.parse(stored);
-
+  
+    if (!otpFlow || !email) {
+      return alert("Invalid OTP session data");
+    }
+  
     verifyOtp.mutate(
       { email, otp: otp.join("") },
       {
         onSuccess: () => {
           toast.success("OTP Verified ✅");
   
-          register.mutate(
-            { name, email, password },
-            {
-              onSuccess: (data) => {
-                console.log('this is the register response get from backend :',data)
-                setAccessToken(data.accessToken);
-                dispatch(
-                  setUser({
-                    id: data.user.id,
-                    name: data.user.name,
-                    email: data.user.email,
-                  })
-                );
-                router.push("/dashboard");
-              },
-              onError: () => {
-                toast.error("Registration failed");
-              },
-            }
-          );
+          if (otpFlow === "register") {
+            if (!stored) return toast("No registration data found");
+            const { name, password } = JSON.parse(stored);
+  
+            register.mutate(
+              { name, email, password },
+              {
+                onSuccess: (data) => {
+                  setAccessToken(data.accessToken);
+                  dispatch(
+                    setUser({
+                      id: data.user.id,
+                      name: data.user.name,
+                      email: data.user.email,
+                    })
+                  );
+                  router.push("/dashboard");
+                },
+                onError: () => {
+                  toast.error("Registration failed");
+                },
+              }
+            );
+          } else if (otpFlow === "forgot") {
+            sessionStorage.setItem('otpCode', otp.join(""));
+            router.push(`/reset-password?email=${encodeURIComponent(email)}`);
+          }
         },
         onError: () => alert("Invalid OTP"),
       }
     );
   };
+
+  const handleResendOtp = () => {
+    const email = sessionStorage.getItem("otpEmail");
+    const type = sessionStorage.getItem("otpFlow"); // "register" or "forgot"
+  
+    if (!email || !type) {
+      toast.error("Missing session data. Please start over.");
+      return;
+    }
+  
+    sendOtp.mutate({ email, type });
+  };
+  
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -168,7 +193,7 @@ const OTPVerification = ({ isDark = false, onBack }: OTPVerificationProps) => {
               <Button
                 onClick={handleVerify}
                 disabled={otp.some((digit) => !digit) || isVerifying}
-                className="w-full py-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full py-3 cursor-pointer text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 {isVerifying ? (
                   <div className="flex items-center justify-center">
@@ -186,7 +211,8 @@ const OTPVerification = ({ isDark = false, onBack }: OTPVerificationProps) => {
                 </p>
                 <Button
                   variant="ghost"
-                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors duration-300"
+                  onClick={handleResendOtp}
+                  className="text-blue-600 cursor-pointer dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors duration-300"
                 >
                   <Mail className="w-4 h-4 mr-2" />
                   Resend Code
@@ -197,7 +223,7 @@ const OTPVerification = ({ isDark = false, onBack }: OTPVerificationProps) => {
               <Button
                 variant="outline"
                 onClick={onBack}
-                className="w-full py-3 border-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
+                className="w-full cursor-pointer py-3 border-2 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Login

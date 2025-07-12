@@ -1,7 +1,12 @@
 import axiosInstance from "../axiosInstance";
 
-type LoginResponse = {
+export type LoginResponse = {
   accessToken: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };
 
 export type RegisterResponse = {
@@ -47,6 +52,7 @@ export const registerApi = async (data: {
 export const logoutApi = async (): Promise<MessageResponse> => {
   try {
     const response = await axiosInstance.post<MessageResponse>("/auth/logout");
+    console.log('this ithe logout response get fromt bakcinde :',response)
     return response.data;
   } catch (error) {
     throw error;
@@ -83,13 +89,13 @@ export const verifyOtpApi = async (data: {
 
 export const forgotPasswordApi = async (data: {
   email: string;
+  type: string; 
 }): Promise<MessageResponse> => {
-  try {
-    const response = await axiosInstance.post<MessageResponse>("/auth/forgot-password", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await axiosInstance.post<MessageResponse>(
+    "/auth/forgot-password",
+    data
+  );
+  return response.data;
 };
 
 export const resetPasswordApi = async (data: {

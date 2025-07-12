@@ -1,8 +1,10 @@
 'use client';
 import { Button } from "@/components/ui/button";
 import { Plus, Users } from "lucide-react";
-
+import CreateGroupModal from "../dashboard/CreateGroupModal";
+import { useRouter } from "next/navigation";
 const HeroSection = () => {
+  const router = useRouter();
   return (
     <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto text-center">
@@ -22,19 +24,24 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button
             size="lg"
-            className="text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            onClick={()=> router.push("/dashboard/groups")}
+            className="text-lg cursor-pointer px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             <Plus className="mr-2 h-5 w-5" />
             Add Your First Expense
           </Button>
-          <Button
-            variant="outline"
-            size="lg"
-            className="text-lg px-8 py-4 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
-          >
-            <Users className="mr-2 h-5 w-5" />
-            Create a Group
-          </Button>
+          <CreateGroupModal
+            trigger={
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-lg px-8 cursor-pointer py-4 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+              >
+                <Users className="mr-2 h-5 w-5" />
+                Create a Group
+              </Button>
+            }
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">

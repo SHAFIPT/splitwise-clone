@@ -16,16 +16,16 @@ export class ResetPasswordUseCase {
 
   async execute({
     email,
-    otpCode,
+    otp,
     newPassword,
   }: {
     email: string;
-    otpCode: string;
+    otp: string;
     newPassword: string;
   }) {
-    const isVerified = await this.otpService.verifyOtp(
+    const isVerified = await this.otpService.isOtpAlreadyVerified(
       email,
-      otpCode,
+      otp,
       'forgot-password',
     );
     if (!isVerified) throw new UnauthorizedException(AuthMessages.INVALID_OTP);
