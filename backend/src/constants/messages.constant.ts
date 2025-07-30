@@ -9,6 +9,7 @@ export const AuthMessages = {
   OTP_SENT: 'OTP sent',
   INVALID_OTP_OR_EXPIRED: 'Invalid or expired OTP',
   OTP_VERIFIED: 'OTP verified',
+  NOT_A_MEMBER: 'You are not a member of this group',
 
   UNAUTHORIZED: 'Unauthorized access',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
@@ -23,4 +24,9 @@ export const UserMessages = {
 
 export const GroupMessages = {
   GROUP_CREATED: 'Group created successfully',
+  GROUP_NOT_FOUND: 'Group not found',
+  NOT_GROUP_MEMBER: 'You are not a member of this group',
+  GROUP_UPDATED: 'Group updated successfully',
+  UPDATE_FAILD: 'Failed to update group: Unknown error',
+  GROUP_DELETED: 'Group deleted successfully',
 };

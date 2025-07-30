@@ -35,7 +35,7 @@ export class OtpService {
         createdAt: 'desc',
       },
     });
-
+    console.log('Found OTP:', otp);
     if (!otp) return false;
 
     await this.prisma.otp.update({

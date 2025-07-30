@@ -27,7 +27,7 @@ export class RegisterUseCase {
     });
 
     const { accessToken, refreshToken } =
-      await this.tokenService.generateTokens(user.id);
+      await this.tokenService.generateTokens(user.id, user.email);
     const hashedRefreshToken = await this.hashUtil.hash(refreshToken);
     await this.authRepo.updateRefreshToken(user.id, hashedRefreshToken);
 

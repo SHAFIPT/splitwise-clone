@@ -13,7 +13,9 @@ export class GetGroupsUseCase {
     userId: string,
     search: string,
     category: string,
-  ): Promise<Group[]> {
-    return this.groupRepo.findMany(userId, search, category);
+    page: number,
+    limit: number,
+  ): Promise<{ data: Group[]; total: number }> {
+    return this.groupRepo.findMany(userId, search, category, page, limit);
   }
 }

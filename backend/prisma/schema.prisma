@@ -11,39 +11,114 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
 }
 
 model User {
-  id            String   @id @default(uuid())
-  name          String
-  email         String   @unique
-  password      String
-  phone         String?  @unique
-  location      String? 
-  avatarUrl     String?
-  role          String   @default("user")
-  groups        Group[] @relation("GroupMembers")
-  refreshToken  String?                         // <-- Add this field
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String             @id @default(uuid())
+  name           String
+  email          String             @unique
+  password       String
+  phone          String?            @unique
+  location       String?
+  avatarUrl      String?
+  role           String             @default("user")
+  groupMemberships GroupMember[]    // added for many-to-many with roles
+  createdGroups  Group[]            @relation("UserCreatedGroups") 
+  createdInvites GroupInviteToken[] @relation("CreatedInviteTokens")
+  usedInvites    InviteUsage[] // <-- changed from relation
+  messages       Message[]          @relation("UserMessages")
+  unreadMessages UnreadMessage[]    @relation("UserUnreadMessages")
+  refreshToken   String?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
 }
 
 model Otp {
   id        String   @id @default(uuid())
   email     String
   code      String
-  type      String   // 'register' | 'forgot-password'
+  type      String // 'register' | 'forgot-password'
   expiresAt DateTime
   verified  Boolean  @default(false)
   createdAt DateTime @default(now())
 }
 
 model Group {
-  id          String   @id @default(uuid())
+  id          String             @id @default(uuid())
   name        String
   description String?
   category    String
   image       String
-  members     User[]   @relation("GroupMembers") 
-  createdAt   DateTime @default(now())
+  members     GroupMember[]  // changed from User[] 
+  createdBy   User?               @relation("UserCreatedGroups", fields: [createdById], references: [id])
+  createdById String?
+  messages    Message[]          @relation("GroupMessages")
+  invites     GroupInviteToken[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime? @updatedAt
+}
+
+model GroupMember {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   String
+  role      String   // 'admin', 'editor', 'viewer'
+  createdAt DateTime @default(now())
+  @@unique([userId, groupId]) // Prevent duplicate entries
+}
+
+model Message {
+  id        String          @id @default(uuid())
+  content   String?
+  type      MessageType     @default(TEXT)
+  sender    User            @relation("UserMessages", fields: [senderId], references: [id])
+  senderId  String
+  group     Group           @relation("GroupMessages", fields: [groupId], references: [id])
+  groupId   String
+  fileUrl   String?
+  replyTo   String?
+  createdAt DateTime        @default(now())
+  unreadBy  UnreadMessage[] @relation("MessageUnreadBy")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  STICKER
+}
+
+model UnreadMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  messageId String
+  groupId   String
+  createdAt DateTime @default(now())
+
+  user    User    @relation("UserUnreadMessages", fields: [userId], references: [id])
+  message Message @relation("MessageUnreadBy", fields: [messageId], references: [id])
+}
+
+model GroupInviteToken {
+  id          String        @id @default(uuid())
+  token       String        @unique
+  group       Group         @relation(fields: [groupId], references: [id])
+  groupId     String
+  createdBy   User          @relation("CreatedInviteTokens", fields: [createdById], references: [id])
+  createdById String
+  usages      InviteUsage[]
+  expiresAt   DateTime
+  createdAt   DateTime      @default(now())
+}
+
+model InviteUsage {
+  id      String           @id @default(uuid())
+  user    User             @relation(fields: [userId], references: [id])
+  userId  String
+  token   GroupInviteToken @relation(fields: [tokenId], references: [id])
+  tokenId String
+  usedAt  DateTime         @default(now())
 }

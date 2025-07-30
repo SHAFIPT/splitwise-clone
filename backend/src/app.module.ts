@@ -4,7 +4,8 @@ import { PrismaModule } from './database/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { UsersModule } from './modules/users/user.module';
-import { GroupsModule } from './modules/groups/user.module';
+import { GroupsModule } from './modules/groups/group.module';
+import { ChatModule } from './modules/chat/chat.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -13,6 +14,7 @@ import { GroupsModule } from './modules/groups/user.module';
     ProfileModule,
     UsersModule,
     GroupsModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

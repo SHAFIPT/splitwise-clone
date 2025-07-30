@@ -40,7 +40,7 @@ export class RefreshTokenUseCase {
     }
 
     const { accessToken, refreshToken: newRefreshToken } =
-      await this.tokenService.generateTokens(user.id);
+      await this.tokenService.generateTokens(user.id, user.email);
 
     const hashedRefreshToken = await this.hashUtil.hash(newRefreshToken);
     await this.authRepo.updateRefreshToken(user.id, hashedRefreshToken);
